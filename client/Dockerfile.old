@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+
+## Labels to apply to image
+#LABEL author="Dr H"
+#LABEL service="client"
+#LABEL version="1.0"
+
+# Alpine is chosen for its small footprint
+# compared to Ubuntu
+FROM node:bullseye as build
+
+WORKDIR /app
+
+COPY package.json ./
+
+# Download necessary NPM modules
+RUN npm install
+
+COPY ./ ./
+
+FROM gcr.io/distroless/base-debian11
+
+COPY --from=build ./ ./
+
+EXPOSE 3000
+
+CMD [ "npm", "start" ]
